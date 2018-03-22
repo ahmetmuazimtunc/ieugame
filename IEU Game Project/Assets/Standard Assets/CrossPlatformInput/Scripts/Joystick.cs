@@ -90,6 +90,9 @@ namespace UnityStandardAssets.CrossPlatformInput
 			}
 			transform.position = new Vector3(m_StartPos.x + newPos.x, m_StartPos.y + newPos.y, m_StartPos.z + newPos.z);
 			UpdateVirtualAxes(transform.position);
+
+            //assign the direction of the JoyStick to our model
+
 		}
 
 
