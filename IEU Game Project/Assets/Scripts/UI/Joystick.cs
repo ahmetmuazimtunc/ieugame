@@ -1,10 +1,9 @@
-using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace UnityStandardAssets.CrossPlatformInput
 {
-	public class Joystick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
+    public class Joystick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 	{
 		public enum AxisOption
 		{
@@ -91,9 +90,14 @@ namespace UnityStandardAssets.CrossPlatformInput
 			transform.position = new Vector3(m_StartPos.x + newPos.x, m_StartPos.y + newPos.y, m_StartPos.z + newPos.z);
 			UpdateVirtualAxes(transform.position);
 
-            //assign the direction of the JoyStick to our model
-
-		}
+            Vector3 xAxis = new Vector3(1, 0, 0);
+            Vector3 JoystickAxis = transform.position;
+            Debug.DrawLine(Vector3.zero, xAxis);
+            Debug.DrawLine(Vector3.zero, JoystickAxis);
+            float angle = Vector3.Angle(xAxis, transform.position);
+            Debug.Log(angle);
+            CharacterMovement.Singleton.SetDirectionFromJoystickAngle(angle);
+        }
 
 
 		public void OnPointerUp(PointerEventData data)

@@ -94,20 +94,21 @@ public class CharacterMovement : NetworkBehaviour
     [SerializeField]
     GameObject CameraPrefab = null;
 
-    private CharacterMovement _singleton;
+    private static CharacterMovement _singleton;
 
-    public CharacterMovement Singleton
+    public static CharacterMovement Singleton
     {
         get { return _singleton; }
     }
 
-    private const float _speedPerFrame = 0.2f;
-    public Vector3 _directionOfMovement = new Vector3(0, 0, 1);
-    public bool _isMoving = false;
+    private const float _directionUnit = 1.0f;
+    //Karaktermizin hareket edip etmeyecegini, edecekse hangi yone edecegini buradan anliyoruz. Hareket istenmiyorsa 0'lar atanmali
 
-    private int hashJump;
-    private int hashRun;
-    private int hashIdle;
+    private Vector3 _direction = new Vector3(0, 0, 0);
+
+    private int _hashJump;
+    private int _hashRun;
+    private int _hashIdle;
 
     private void Start()
     {
@@ -119,43 +120,69 @@ public class CharacterMovement : NetworkBehaviour
         {
             Destroy(this);
         }
-        hashIdle = Animator.StringToHash("idle");
-        hashJump = Animator.StringToHash("jump");
-        hashRun = Animator.StringToHash("run");
+        _hashIdle = Animator.StringToHash("idle");
+        _hashJump = Animator.StringToHash("jump");
+        _hashRun = Animator.StringToHash("run");
+
+        //_directionOfMovement = transform.position + 
     }
 
-    /// <summary>
-    /// The method should be called in FixedUpdate()
-    /// </summary>        
-    private void MoveCharacter(/*Vector3 direction*/)
-    {     
-        Vector3 destination = _directionOfMovement * _speedPerFrame;
-        _rigidBody.transform.Translate(destination);
-
-        //Visualizing our 3D Vectors for debugging purposes 
-        Debug.DrawRay(Vector3.zero, transform.position, Color.yellow);
-        Debug.DrawRay(Vector3.zero, destination, Color.cyan);
-        Debug.DrawRay(transform.position, _directionOfMovement, Color.blue);
-
-        Debug.DrawRay(transform.position, new Vector3(0f, 0f, 10f), Color.red);
-    }
-    
-
-    /// <param name="newDirection">direction vector should be normalized</param>
-    public void AssignDirection(Vector3 newDirection)
+    private void Movecharacter()
     {
-        Vector3 directionNormal = newDirection.normalized;
-        _directionOfMovement = directionNormal;
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+
+        if (_direction == Vector3.zero)
+        {
+            return;
+        }
+
+        if (!_animator.GetBool(_hashRun))
+        {
+            _animator.SetBool(_hashRun, true);
+        }
+
+        transform.Translate(_direction * Time.fixedDeltaTime);
+    }
+
+
+    /// <param name="joystickAngle">Joystick'ten gelen aci gosteren Vektor</param>
+    public void SetDirectionFromJoystickAngle(float joyStickAngle)
+    {
+        _direction = Quaternion.AngleAxis(joyStickAngle, Vector3.forward) * _direction;
+        Debug.Log(_direction);
     }
 
     private void FixedUpdate()
     {
-
+        Movecharacter();
     }
 
     public override void OnStartLocalPlayer()
     {
         GameObject CopyCamera = GameObject.Instantiate(CameraPrefab, transform, false);
     }
+}
 
+public static class OgtMathHelper 
+{
+    /// <summary>
+    /// iki vektorumuz arasindaki aciyi hesaplamamiz gereken durumlarda gorsel olarak yardımcı olacak bir fonksiyon
+    /// Parametre olarak verdigimiz iki vektoru Unity Editor icerisinde Scene'e cizdiriyor ve aralarindaki aciyi Konsol penceresine yazdiriyor.
+    /// </summary>
+    public static void DebugAngleAndVisualizeVectors(Vector3 vectorOne, Vector3 vectorTwo)
+    {
+        Debug.DrawRay(Vector3.zero, vectorOne);
+        Debug.DrawRay(Vector3.zero, vectorTwo);
+        float angle = CalcualteAngleBetweenTwoVectors(vectorOne, vectorTwo);
+
+        Debug.Log(angle);
+    }
+
+    public static float CalcualteAngleBetweenTwoVectors(Vector3 vectorOne, Vector3 vectorTwo)
+    {
+        return Vector3.Angle(vectorOne, vectorTwo);
+    }
 }
