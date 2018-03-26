@@ -6,7 +6,7 @@ using UnityStandardAssets.Characters.ThirdPerson;
 using UnityStandardAssets.CrossPlatformInput;
 
 public class OGTCharacterMovement : NetworkBehaviour
-{   
+{
     [SerializeField]
     private Rigidbody _rigidBody;
 
@@ -93,13 +93,14 @@ public static class OgtMathHelper
     /// iki vektorumuz arasindaki aciyi hesaplamamiz gereken durumlarda gorsel olarak yardımcı olacak bir fonksiyon
     /// Parametre olarak verdigimiz iki vektoru Unity Editor icerisinde Scene'e cizdiriyor ve aralarindaki aciyi Konsol penceresine yazdiriyor.
     /// </summary>
-    public static void DebugAngleAndVisualizeVectors(Vector3 vectorOne, Vector3 vectorTwo)
+    public static float CalculateAngleBetweenTwoVectorsAndVisualizeThem(Vector3 vectorOne, Vector3 vectorTwo)
     {
         Debug.DrawRay(Vector3.zero, vectorOne);
         Debug.DrawRay(Vector3.zero, vectorTwo);
         float angle = CalcualteAngleBetweenTwoVectors(vectorOne, vectorTwo);
 
         Debug.Log(angle);
+        return angle;
     }
 
     public static float CalcualteAngleBetweenTwoVectors(Vector3 vectorOne, Vector3 vectorTwo)
