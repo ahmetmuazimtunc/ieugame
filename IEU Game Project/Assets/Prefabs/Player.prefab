@@ -2499,7 +2499,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8145d3cae44f864ba698aee016906ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _myTransform: {fileID: 4181293410497756}
   _rigidBody: {fileID: 54634742175900396}
   _animator: {fileID: 95548519475218656}
   CameraPrefab: {fileID: 1163725042814118, guid: 70f7d9bb134ff154ea263af862346ebf,
@@ -2510,7 +2509,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1468443606905432}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce7a80d520cacc042b5fe14f373d8173, type: 3}
   m_Name: 

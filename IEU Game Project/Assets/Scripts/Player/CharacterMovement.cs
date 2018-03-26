@@ -102,8 +102,8 @@ public class CharacterMovement : NetworkBehaviour
     }
 
     private const float _directionUnit = 1.0f;
-    //Karaktermizin hareket edip etmeyecegini, edecekse hangi yone edecegini buradan anliyoruz. Hareket istenmiyorsa 0'lar atanmali
 
+    //Karaktermizin hareket edip etmeyecegini, edecekse hangi yone edecegini buradan anliyoruz. Hareket istenmiyorsa 0'lar atanmali
     private Vector3 _direction = new Vector3(0, 0, 0);
 
     private int _hashJump;
@@ -147,12 +147,11 @@ public class CharacterMovement : NetworkBehaviour
         transform.Translate(_direction * Time.fixedDeltaTime);
     }
 
-
     /// <param name="joystickAngle">Joystick'ten gelen aci gosteren Vektor</param>
     public void SetDirectionFromJoystickAngle(float joyStickAngle)
     {
         _direction = Quaternion.AngleAxis(joyStickAngle, Vector3.forward) * _direction;
-        Debug.Log(_direction);
+        //Debug.Log(_direction);
     }
 
     private void FixedUpdate()
