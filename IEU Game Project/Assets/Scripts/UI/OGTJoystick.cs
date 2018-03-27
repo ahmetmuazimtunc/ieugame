@@ -139,14 +139,15 @@ namespace UnityStandardAssets.CrossPlatformInput
 
         public void OnPointerUp(PointerEventData data)
         {
-            Debug.Log("pointer up!!");
+            _isDown = false;
             transform.position = _origin.position;
             OGTCharacterMovement.Singleton.SetDirectionFromJoystickAngle(0);
         }
 
+        public static bool _isDown = false;
         public void OnPointerDown(PointerEventData data)
         {
-
+            _isDown = true;
         }
     }
 }

@@ -30,7 +30,7 @@ public class OGTCharacterMovement : NetworkBehaviour
     }
 
     //Karaktermizin hareket edip etmeyecegini, edecekse hangi yone edecegini buradan anliyoruz. Hareket istenmiyorsa 0'lar atanmali
-    private Vector3 Direction = Vector3.zero;
+    private Vector3 _direction = Vector3.zero;
     private int _hashJump;
     private int _hashRun;
     private int _hashIdle;
@@ -57,7 +57,7 @@ public class OGTCharacterMovement : NetworkBehaviour
             return;
         }
 
-        if (Direction == Vector3.zero)
+        if (_direction == Vector3.zero)
         {
             _animator.SetBool(_hashRun, false);
             _animator.SetBool(_hashIdle, true);
@@ -70,31 +70,49 @@ public class OGTCharacterMovement : NetworkBehaviour
             _animator.SetBool(_hashRun, true);
         }        
 
-        transform.Translate(Direction * Time.fixedDeltaTime);
+        transform.Translate(_direction * Time.fixedDeltaTime);
     }
 
-    /// <param name="joystickAngle">Joystick'ten gelen aci gosteren Vektor</param>
+    /// <param name="joystickAngle"joystick'in X ekseni ile yaptiigi aciyi 3D karakteriimizin , Yön Vektorune verdiren method</param>
     public void SetDirectionFromJoystickAngle(float joyStickAngle)
     {
         //bizim elimizde olan bir eşik degerin uzerine cikarsa karakterimizi kosturalim
         if (joyStickAngle > _anglePrecision)
         {
             Vector3 charPos = transform.position;
-            Vector3 directionPointFromOrigin = new Vector3(charPos.x + 10, charPos.y, charPos.z);
-            Vector3 direction = charPos - directionPointFromOrigin;
-            Debug.DrawLine(charPos, direction , Color.blue);
+            Vector3 directionPointFromOrigin = new Vector3(charPos.x, charPos.y, charPos.z + 1);
+
+            /*Vector3 direction*/_direction = directionPointFromOrigin - charPos;
         }
         else
         {
-            Direction.Set(0, 0, 0);
+            _direction.Set(0, 0, 0);
+            return;
         }
-         Quaternion rotation = Quaternion.AngleAxis(joyStickAngle, Vector3.up);
-        //_direction = rotatiocoln * _direction;
+        Quaternion rotation = Quaternion.AngleAxis(90 - joyStickAngle, Vector3.up);
+        _direction = rotation * _direction;
+        Debug.DrawLine(Vector3.zero, _direction , Color.green);
     }
 
     private void FixedUpdate()
     {
         Movecharacter();
+        //Vektor Debug
+        if (OGTJoystick._isDown)
+        {
+            Vector3 charPos = transform.position;
+            Vector3 directionPointFromOrigin = new Vector3(charPos.x, charPos.y, charPos.z + 1f);
+
+            Vector3 direction = directionPointFromOrigin - charPos;
+            
+            //mavi vektor = kooridnat orjininden baslayip , karakterin durdugu noktayi gosteriyor
+            Debug.DrawLine(Vector3.zero, charPos, Color.blue);
+            //sari vektor = kooridnat orjininden baslayip , bu karede karakterimizin gitmeye baslayacagi noktayi gosteriyor
+            Debug.DrawLine(Vector3.zero, directionPointFromOrigin, Color.yellow);
+            //kirmzi vektor = mavi_vektor - sari_vektor ; yani karakterin durdugu yerden ; gidecegi noktayi gosteren vektor
+            //Debug.DrawLine(Vector3.zero, direction , Color.red);
+            Debug.DrawLine(Vector3.zero, _direction, Color.red);
+        }
     }
 
     private void Update()
