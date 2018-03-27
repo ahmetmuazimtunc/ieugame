@@ -14,27 +14,23 @@ namespace UnityStandardAssets.CrossPlatformInput
         private Vector3 _xCoordinate = new Vector3(10, 0, 0);
         private Vector3 _yCoordinate = new Vector3(0, 10, 0);
 
-        private /*const*/ float _angleOrigin_xAxis = 0f;        
-
-        ////custom Koordinat sistemimizi cizdirmek icin ne kadar kaydiracagiz orjinal koordinat sistemi merkezininin x'ini
-        //[SerializeField]
-        //private float _coorXOffset = 0f;
-
-        ////custom Koordinat sistemimizi cizdirmek icin ne kadar kaydiracagiz orjinal koordinat sistemi merkezininin y'sini
-        //[SerializeField]
-        //private float _coorYOffset = 0f;
-
         void Start()
         {
-            //_coorXOffset = _origin.position.x / 2;
-            //_coorYOffset = _origin.position.y / 2;
-            _angleOrigin_xAxis = Vector3.Angle(_origin.position, _xCoordinate);
+
         }
 
         void Update()
         {
             DrawCoordinateSystem();
             DrawJoystickRadiusAndVectors();
+
+            Debug.DrawLine(new Vector3(0, 50, 0), new Vector3(200, 50, 0));
+            
+
+            Debug.DrawLine(Vector3.zero, transform.position);
+            Debug.DrawLine(Vector3.zero, _origin.position);
+            Vector3 originToNew = transform.position - _origin.position;
+            Debug.DrawLine(Vector3.zero, originToNew);
         }
 
         //joystickimizin sinirlarini gosteren kareyi View'a cizdiren method
@@ -108,7 +104,7 @@ namespace UnityStandardAssets.CrossPlatformInput
                 currentX = _origin.position.x - _halfRadius;
             }
             //y kontrol
-            if (currentY > OgtMathHelper.ConvertToPositive(_origin.position.y + _halfRadius))
+            if (currentY > /*OgtMathHelper.ConvertToPositive(*/_origin.position.y + _halfRadius/*)*/)
             {
 
                 currentY = _origin.position.y + _halfRadius;
@@ -122,36 +118,31 @@ namespace UnityStandardAssets.CrossPlatformInput
 
             transform.position = newPos;
 
-            float angle = CalculateJoystickAngle(newPos);
-
+            float angle = CalculateJoystickAngle(newPos);            
+            Debug.Log(angle);
+            OGTCharacterMovement.Singleton.SetDirectionFromJoystickAngle(angle);
         }
 
         /// <summary>
-        /// iki vektoru cizip acisini aliyor
+        /// joystick in acisini buluyor
         /// </summary>
         private float CalculateJoystickAngle(Vector3 joyStickVector)
         {
-            //jostick'in vektoru ile , x ekseni arasındaki aci
-            float angleJoystick_xAxis = Vector3.Angle(_xCoordinate, joyStickVector);
-            //aci hesabi
-            float angle = _angleOrigin_xAxis - angleJoystick_xAxis;
-            //eger joystick-xEkeseni arasiindaki aci  , origin-xEkkseni arasindaki acidan buyuk ise
-            if (angleJoystick_xAxis > _angleOrigin_xAxis)
+            Vector3 originToNew = transform.position - _origin.position;
+            float angle = Vector3.Angle(_xCoordinate, originToNew);
+            if (transform.position.y < _origin.transform.position.y)
             {
-                //orjinin x-eksen ile yaptigi aciyi , 90dan cikarip;
-                angle = 90 - _angleOrigin_xAxis;
-                //sonuctan da joystick ile y ekseni arasindaki aciyi cikartiyoruz
-                angle = angle - Vector3.Angle(joyStickVector, _yCoordinate);
+                angle = 360 - angle;
             }
             return angle;
         }
 
         public void OnPointerUp(PointerEventData data)
         {
-            //Debug.Log("up triggered");
+            Debug.Log("pointer up!!");
             transform.position = _origin.position;
+            OGTCharacterMovement.Singleton.SetDirectionFromJoystickAngle(0);
         }
-
 
         public void OnPointerDown(PointerEventData data)
         {

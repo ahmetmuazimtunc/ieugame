@@ -16,6 +16,9 @@ public class OGTCharacterMovement : NetworkBehaviour
     [SerializeField]
     GameObject CameraPrefab = null;
 
+    [SerializeField]
+    private float _anglePrecision = 2f;
+
     private static OGTCharacterMovement _singleton;
 
     public static OGTCharacterMovement Singleton
@@ -46,6 +49,7 @@ public class OGTCharacterMovement : NetworkBehaviour
         _hashJump = Animator.StringToHash("jump");
         _hashRun = Animator.StringToHash("run");
 
+        
         //_directionOfMovement = transform.position + 
     }
 
@@ -58,12 +62,15 @@ public class OGTCharacterMovement : NetworkBehaviour
 
         if (_direction == Vector3.zero)
         {
+            _animator.SetBool(_hashRun, false);
+            _animator.SetBool(_hashIdle, true);
             return;
         }
 
         if (!_animator.GetBool(_hashRun))
         {
-            _animator.SetBool(_hashRun, true);
+            _animator.SetBool(_hashIdle, false);
+            _animator.SetBool(_hashRun, true);            
         }
 
         transform.Translate(_direction * Time.fixedDeltaTime);
@@ -72,8 +79,19 @@ public class OGTCharacterMovement : NetworkBehaviour
     /// <param name="joystickAngle">Joystick'ten gelen aci gosteren Vektor</param>
     public void SetDirectionFromJoystickAngle(float joyStickAngle)
     {
-        _direction = Quaternion.AngleAxis(joyStickAngle, Vector3.forward) * _direction;
-        //Debug.Log(_direction);
+        //bizim elimizde olan bir eşik degerin uzerine cikarsa karakterimizi kosturalim
+        if (joyStickAngle > _anglePrecision)
+        {
+            _direction.Set(0 , 0 , 1);
+        }
+        else
+        {
+            _direction.Set(0, 0, 0);
+        }
+        _direction = Quaternion.AngleAxis(joyStickAngle, Vector3.up) * _direction;
+
+        //transform.Rotate(Vector3.up, joyStickAngle);
+        Debug.DrawLine(transform.position, _direction * 10, Color.blue);
     }
 
     private void FixedUpdate()
