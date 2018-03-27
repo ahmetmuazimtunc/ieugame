@@ -11,7 +11,7 @@ public class OGTCharacterMovement : NetworkBehaviour
     private Rigidbody _rigidBody;
 
     [SerializeField]
-    private Animator _animator;
+    private Animator  _animator;
 
     [SerializeField]
     private Vector3 _spawnPoint = Vector3.zero;
@@ -29,11 +29,8 @@ public class OGTCharacterMovement : NetworkBehaviour
         get { return _singleton; }
     }
 
-    private const float _directionUnit = 1.0f;
-
     //Karaktermizin hareket edip etmeyecegini, edecekse hangi yone edecegini buradan anliyoruz. Hareket istenmiyorsa 0'lar atanmali
-    private Vector3 _direction = new Vector3(0, 0, 0);
-
+    private Vector3 Direction = Vector3.zero;
     private int _hashJump;
     private int _hashRun;
     private int _hashIdle;
@@ -60,7 +57,7 @@ public class OGTCharacterMovement : NetworkBehaviour
             return;
         }
 
-        if (_direction == Vector3.zero)
+        if (Direction == Vector3.zero)
         {
             _animator.SetBool(_hashRun, false);
             _animator.SetBool(_hashIdle, true);
@@ -70,10 +67,10 @@ public class OGTCharacterMovement : NetworkBehaviour
         if (!_animator.GetBool(_hashRun))
         {
             _animator.SetBool(_hashIdle, false);
-            _animator.SetBool(_hashRun, true);            
-        }
+            _animator.SetBool(_hashRun, true);
+        }        
 
-        transform.Translate(_direction * Time.fixedDeltaTime);
+        transform.Translate(Direction * Time.fixedDeltaTime);
     }
 
     /// <param name="joystickAngle">Joystick'ten gelen aci gosteren Vektor</param>
@@ -82,14 +79,17 @@ public class OGTCharacterMovement : NetworkBehaviour
         //bizim elimizde olan bir eşik degerin uzerine cikarsa karakterimizi kosturalim
         if (joyStickAngle > _anglePrecision)
         {
-            _direction.Set(0 , 0 , 1);
+            Vector3 charPos = transform.position;
+            Vector3 directionPointFromOrigin = new Vector3(charPos.x + 10, charPos.y, charPos.z);
+            Vector3 direction = charPos - directionPointFromOrigin;
+            Debug.DrawLine(charPos, direction , Color.blue);
         }
         else
         {
-            _direction.Set(0, 0, 0);
+            Direction.Set(0, 0, 0);
         }
-        Quaternion rotation = Quaternion.AngleAxis(joyStickAngle, Vector3.up);
-        //_direction = rotation * _direction;
+         Quaternion rotation = Quaternion.AngleAxis(joyStickAngle, Vector3.up);
+        //_direction = rotatiocoln * _direction;
     }
 
     private void FixedUpdate()
@@ -99,10 +99,7 @@ public class OGTCharacterMovement : NetworkBehaviour
 
     private void Update()
     {
-        if (_direction != Vector3.zero)
-        {
-            Debug.DrawLine(transform.position, _direction * 10, Color.blue);
-        }
+        
     }
 
     public override void OnStartLocalPlayer()
