@@ -30,7 +30,9 @@ public class OGTCharacterMovement : NetworkBehaviour
     }
 
     //Karaktermizin hareket edip etmeyecegini, edecekse hangi yone edecegini buradan anliyoruz. Hareket istenmiyorsa 0'lar atanmali
-    private Vector3 _direction = Vector3.zero;
+    private Vector3 _directionPath = Vector3.zero;
+    private Vector3 _directionModel = Vector3.zero;
+
     private int _hashJump;
     private int _hashRun;
     private int _hashIdle;
@@ -57,7 +59,7 @@ public class OGTCharacterMovement : NetworkBehaviour
             return;
         }
 
-        if (_direction == Vector3.zero)
+        if (_directionPath == Vector3.zero)
         {
             _animator.SetBool(_hashRun, false);
             _animator.SetBool(_hashIdle, true);
@@ -70,7 +72,22 @@ public class OGTCharacterMovement : NetworkBehaviour
             _animator.SetBool(_hashRun, true);
         }        
 
-        transform.Translate(_direction * Time.fixedDeltaTime);
+        //model oynatma
+        transform.Translate(_directionPath * Time.fixedDeltaTime);
+
+        //model döndürme
+        float angleModel = Vector3.Angle(Vector3.right, _directionModel);
+        float angleDirection = Vector3.Angle(Vector3.right, _directionPath);
+        float precision = 0.05f;
+
+        if (angleModel < angleDirection)
+        {
+            //TODO...
+        }
+        else if (angleModel > angleDirection)
+        {
+            //TODO... BURADA KALDIN!
+        }
     }
 
     /// <param name="joystickAngle"joystick'in X ekseni ile yaptiigi aciyi 3D karakteriimizin , Yön Vektorune verdiren method</param>
@@ -82,16 +99,16 @@ public class OGTCharacterMovement : NetworkBehaviour
             Vector3 charPos = transform.position;
             Vector3 directionPointFromOrigin = new Vector3(charPos.x, charPos.y, charPos.z + 1);
 
-            /*Vector3 direction*/_direction = directionPointFromOrigin - charPos;
+            /*Vector3 direction*/_directionPath = directionPointFromOrigin - charPos;
         }
         else
         {
-            _direction.Set(0, 0, 0);
+            _directionPath.Set(0, 0, 0);
             return;
         }
         Quaternion rotation = Quaternion.AngleAxis(90 - joyStickAngle, Vector3.up);
-        _direction = rotation * _direction;
-        Debug.DrawLine(Vector3.zero, _direction , Color.green);
+        _directionPath = rotation * _directionPath;
+        Debug.DrawLine(Vector3.zero, _directionPath , Color.green);
     }
 
     private void FixedUpdate()
@@ -111,7 +128,7 @@ public class OGTCharacterMovement : NetworkBehaviour
             Debug.DrawLine(Vector3.zero, directionPointFromOrigin, Color.yellow);
             //kirmzi vektor = mavi_vektor - sari_vektor ; yani karakterin durdugu yerden ; gidecegi noktayi gosteren vektor
             //Debug.DrawLine(Vector3.zero, direction , Color.red);
-            Debug.DrawLine(Vector3.zero, _direction, Color.red);
+            Debug.DrawLine(Vector3.zero, _directionPath, Color.red);
         }
     }
 
@@ -124,6 +141,7 @@ public class OGTCharacterMovement : NetworkBehaviour
     {
         GameObject CopyCamera = GameObject.Instantiate(CameraPrefab, transform, false);
         transform.position = _spawnPoint;
+        _directionModel = transform.rotation.eulerAngles;
     }
 }
 
