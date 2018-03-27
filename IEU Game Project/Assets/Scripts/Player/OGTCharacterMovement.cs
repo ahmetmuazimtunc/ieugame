@@ -14,6 +14,9 @@ public class OGTCharacterMovement : NetworkBehaviour
     private Animator _animator;
 
     [SerializeField]
+    private Vector3 _spawnPoint = Vector3.zero;
+
+    [SerializeField]
     GameObject CameraPrefab = null;
 
     [SerializeField]
@@ -48,9 +51,6 @@ public class OGTCharacterMovement : NetworkBehaviour
         _hashIdle = Animator.StringToHash("idle");
         _hashJump = Animator.StringToHash("jump");
         _hashRun = Animator.StringToHash("run");
-
-        
-        //_directionOfMovement = transform.position + 
     }
 
     private void Movecharacter()
@@ -88,10 +88,8 @@ public class OGTCharacterMovement : NetworkBehaviour
         {
             _direction.Set(0, 0, 0);
         }
-        _direction = Quaternion.AngleAxis(joyStickAngle, Vector3.up) * _direction;
-
-        //transform.Rotate(Vector3.up, joyStickAngle);
-        Debug.DrawLine(transform.position, _direction * 10, Color.blue);
+        Quaternion rotation = Quaternion.AngleAxis(joyStickAngle, Vector3.up);
+        //_direction = rotation * _direction;
     }
 
     private void FixedUpdate()
@@ -99,9 +97,18 @@ public class OGTCharacterMovement : NetworkBehaviour
         Movecharacter();
     }
 
+    private void Update()
+    {
+        if (_direction != Vector3.zero)
+        {
+            Debug.DrawLine(transform.position, _direction * 10, Color.blue);
+        }
+    }
+
     public override void OnStartLocalPlayer()
     {
         GameObject CopyCamera = GameObject.Instantiate(CameraPrefab, transform, false);
+        transform.position = _spawnPoint;
     }
 }
 
