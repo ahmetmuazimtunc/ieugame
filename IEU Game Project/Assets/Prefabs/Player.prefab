@@ -669,10 +669,11 @@ GameObject:
   - component: {fileID: 54634742175900396}
   - component: {fileID: 136442084404065704}
   - component: {fileID: 114075791876687340}
-  - component: {fileID: 114033870896692068}
   - component: {fileID: 114657239424530376}
   - component: {fileID: 114289397164333592}
   - component: {fileID: 114722780218108580}
+  - component: {fileID: 114033870896692068}
+  - component: {fileID: 114261369152520268}
   m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
@@ -2505,6 +2506,7 @@ MonoBehaviour:
   CameraPrefab: {fileID: 1163725042814118, guid: 70f7d9bb134ff154ea263af862346ebf,
     type: 2}
   _anglePrecision: 2
+  _character: {fileID: 4181293410497756}
 --- !u!114 &114075791876687340
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2524,6 +2526,18 @@ MonoBehaviour:
   m_MoveSpeedMultiplier: 1
   m_AnimSpeedMultiplier: 1
   m_GroundCheckDistance: 0.3
+--- !u!114 &114261369152520268
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1468443606905432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a984dc9f0808841ae1dee89cfdf256, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _character: {fileID: 4181293410497756}
 --- !u!114 &114289397164333592
 MonoBehaviour:
   m_ObjectHideFlags: 1

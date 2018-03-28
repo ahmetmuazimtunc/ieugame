@@ -118,9 +118,9 @@ namespace UnityStandardAssets.CrossPlatformInput
 
             transform.position = newPos;
 
-            float angle = CalculateJoystickAngle(newPos);            
-            Debug.Log(angle);
+            float angle = CalculateJoystickAngle(newPos);                        
             OGTCharacterMovement.Singleton.SetDirectionFromJoystickAngle(angle);
+            //Debug.Log(OGTCharacterMovement.Singleton.DirectionPointAngle);
         }
 
         /// <summary>
@@ -142,6 +142,7 @@ namespace UnityStandardAssets.CrossPlatformInput
             _isDown = false;
             transform.position = _origin.position;
             OGTCharacterMovement.Singleton.SetDirectionFromJoystickAngle(0);
+            //Debug.Log(OGTCharacterMovement.Singleton.DirectionPointAngle);
         }
 
         public static bool _isDown = false;

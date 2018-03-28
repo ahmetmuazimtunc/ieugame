@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using UnityStandardAssets.Characters.ThirdPerson;
 using UnityStandardAssets.CrossPlatformInput;
 
+//bu class karakter objesinin bir component'ı olmalı
 public class OGTCharacterMovement : NetworkBehaviour
 {
     [SerializeField]
@@ -22,6 +23,16 @@ public class OGTCharacterMovement : NetworkBehaviour
     [SerializeField]
     private float _anglePrecision = 2f;
 
+    private float _directionPointAngle;
+    //disaridan deskin degeri degistirilememesi icin , sadece okunabilir sekilde disari aciyoruz...
+    public float DirectionPointAngle
+    {
+        get
+        {
+            return _directionPointAngle;
+        }
+    }
+
     private static OGTCharacterMovement _singleton;
 
     public static OGTCharacterMovement Singleton
@@ -29,13 +40,16 @@ public class OGTCharacterMovement : NetworkBehaviour
         get { return _singleton; }
     }
 
+    [SerializeField]
+    private Transform _character = null;
+
     //Karaktermizin hareket edip etmeyecegini, edecekse hangi yone edecegini buradan anliyoruz. Hareket istenmiyorsa 0'lar atanmali
-    private Vector3 _directionPath = Vector3.zero;
-    private Vector3 _directionModel = Vector3.zero;
+    private Vector3 _directionPoint = Vector3.zero;
+    private Vector3 _ModelVectorRotation = Vector3.zero;
 
     private int _hashJump;
     private int _hashRun;
-    private int _hashIdle;
+    private int _hashIdle;    
 
     private void Start()
     {
@@ -59,7 +73,7 @@ public class OGTCharacterMovement : NetworkBehaviour
             return;
         }
 
-        if (_directionPath == Vector3.zero)
+        if (_directionPoint == Vector3.zero)
         {
             _animator.SetBool(_hashRun, false);
             _animator.SetBool(_hashIdle, true);
@@ -70,24 +84,14 @@ public class OGTCharacterMovement : NetworkBehaviour
         {
             _animator.SetBool(_hashIdle, false);
             _animator.SetBool(_hashRun, true);
-        }        
+        }
 
         //model oynatma
-        transform.Translate(_directionPath * Time.fixedDeltaTime);
+        _character.Translate(_directionPoint * Time.fixedDeltaTime);
 
         //model döndürme
-        float angleModel = Vector3.Angle(Vector3.right, _directionModel);
-        float angleDirection = Vector3.Angle(Vector3.right, _directionPath);
-        float precision = 0.05f;
-
-        if (angleModel < angleDirection)
-        {
-            //TODO...
-        }
-        else if (angleModel > angleDirection)
-        {
-            //TODO... BURADA KALDIN!
-        }
+        float angleModel = Vector3.Angle(Vector3.right, _ModelVectorRotation);
+        float angleDirection = Vector3.Angle(Vector3.right, _directionPoint);
     }
 
     /// <param name="joystickAngle"joystick'in X ekseni ile yaptiigi aciyi 3D karakteriimizin , Yön Vektorune verdiren method</param>
@@ -96,19 +100,21 @@ public class OGTCharacterMovement : NetworkBehaviour
         //bizim elimizde olan bir eşik degerin uzerine cikarsa karakterimizi kosturalim
         if (joyStickAngle > _anglePrecision)
         {
-            Vector3 charPos = transform.position;
+            Vector3 charPos = _character.position;
             Vector3 directionPointFromOrigin = new Vector3(charPos.x, charPos.y, charPos.z + 1);
 
-            /*Vector3 direction*/_directionPath = directionPointFromOrigin - charPos;
+            _directionPoint = directionPointFromOrigin - charPos;
         }
         else
         {
-            _directionPath.Set(0, 0, 0);
+            _directionPoint.Set(0, 0, 0);
+            _directionPointAngle = joyStickAngle;
             return;
         }
         Quaternion rotation = Quaternion.AngleAxis(90 - joyStickAngle, Vector3.up);
-        _directionPath = rotation * _directionPath;
-        Debug.DrawLine(Vector3.zero, _directionPath , Color.green);
+        _directionPoint = rotation * _directionPoint;
+        //diger scriptlerimiz buradan okuyacak , o sebeple acimizi global bir degiskende tutuyoruz.
+        _directionPointAngle = joyStickAngle;
     }
 
     private void FixedUpdate()
@@ -117,18 +123,21 @@ public class OGTCharacterMovement : NetworkBehaviour
         //Vektor Debug
         if (OGTJoystick._isDown)
         {
-            Vector3 charPos = transform.position;
-            Vector3 directionPointFromOrigin = new Vector3(charPos.x, charPos.y, charPos.z + 1f);
-
-            Vector3 direction = directionPointFromOrigin - charPos;
+            Vector3 charPos = _character.position;
             
             //mavi vektor = kooridnat orjininden baslayip , karakterin durdugu noktayi gosteriyor
             Debug.DrawLine(Vector3.zero, charPos, Color.blue);
-            //sari vektor = kooridnat orjininden baslayip , bu karede karakterimizin gitmeye baslayacagi noktayi gosteriyor
-            Debug.DrawLine(Vector3.zero, directionPointFromOrigin, Color.yellow);
+            //sari vektor = kooridnat orjininden baslayip , bu karede(frame'de) karakterimizin gitmeye baslayacagi noktayi gosteriyor
+            Vector3 zeroToPoint = charPos + _directionPoint;
+            Debug.DrawLine(Vector3.zero, zeroToPoint, Color.yellow);
             //kirmzi vektor = mavi_vektor - sari_vektor ; yani karakterin durdugu yerden ; gidecegi noktayi gosteren vektor
-            //Debug.DrawLine(Vector3.zero, direction , Color.red);
-            Debug.DrawLine(Vector3.zero, _directionPath, Color.red);
+            Debug.DrawLine(charPos, zeroToPoint, Color.red);
+            //acinin hesaplandigi X eksenini temsil eden zigi
+            //nokta1 of cizgi
+            Vector3 point1 = new Vector3(charPos.x - 3, charPos.y, charPos.z);
+            //nokta2 of cizgi
+            Vector3 point2 = new Vector3(charPos.x + 3, charPos.y, charPos.z);
+            Debug.DrawLine(point1, point2 , Color.green);
         }
     }
 
@@ -139,9 +148,9 @@ public class OGTCharacterMovement : NetworkBehaviour
 
     public override void OnStartLocalPlayer()
     {
-        GameObject CopyCamera = GameObject.Instantiate(CameraPrefab, transform, false);
-        transform.position = _spawnPoint;
-        _directionModel = transform.rotation.eulerAngles;
+        GameObject CopyCamera = GameObject.Instantiate(CameraPrefab, _character, false);
+        _character.position = _spawnPoint;
+        _ModelVectorRotation = _character.rotation.eulerAngles;
     }
 }
 

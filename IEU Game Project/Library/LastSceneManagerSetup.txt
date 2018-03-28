@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/Scenes/School Yard Outdoors.unity
-  isLoaded: 1
-  isActive: 1
