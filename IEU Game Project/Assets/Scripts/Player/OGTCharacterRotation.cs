@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -24,7 +24,7 @@ public class OGTCharacterRotation : NetworkBehaviour
 
     private const float _anglePerFrameFixed = 2f;
 
-    private float Angle_Char_xAxis
+    private float Angle_Char_yAxis
     {
         get
         {
@@ -46,7 +46,7 @@ public class OGTCharacterRotation : NetworkBehaviour
 
     public void CheckRotation()
     {
-        //eger bu script; Client'imizin karakterinden calismiyorsa, yani diger oyuncularindan karakterlerinden birisi ise;
+        //eger bu script; Client'imizin karakterinden calismiyorsa, yani diger oyuncularin karakterlerinden birisi ise;
         if (!isLocalPlayer || OGTCharacterMovement.Singleton.DirectionPointAngle == 0f)
         {
             //bu fonksiyonun buranin altindaki satirlarini okuma
@@ -54,14 +54,15 @@ public class OGTCharacterRotation : NetworkBehaviour
         }
         //karakterin x ekseni ile yaptigi aci , gitmesi gereken patikanin-x Ekesni ile yaptigi acidan buyuk ise;   
         float angle = _anglePerFrameFixed;
-        Debug.Log("Char_Angle: " + Angle_Char_xAxis);
-        if (Angle_Char_xAxis > OGTCharacterMovement.Singleton.DirectionPointAngle + _angleOffset)
+        Debug.Log("Char_Angle: " + Angle_Char_yAxis);
+        Debug.DrawLine(_character.transform.position, OGTCharacterMovement.Singleton._directionPoint);
+        if (Angle_Char_yAxis > OGTCharacterMovement.Singleton.DirectionPointAngle + _angleOffset)
         {
             //aci kabull ettigimiz aralik degerinin icerisine girene kadar
             //karakteri saga dondur
             angle = -angle;
         }
-        else if (Angle_Char_xAxis < OGTCharacterMovement.Singleton.DirectionPointAngle -_angleOffset)
+        else if (Angle_Char_yAxis < OGTCharacterMovement.Singleton.DirectionPointAngle -_angleOffset)
         {
             
         }

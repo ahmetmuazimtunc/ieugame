@@ -44,8 +44,33 @@ public class OGTCharacterMovement : NetworkBehaviour
     private Transform _character = null;
 
     //Karaktermizin hareket edip etmeyecegini, edecekse hangi yone edecegini buradan anliyoruz. Hareket istenmiyorsa 0'lar atanmali
-    private Vector3 _directionPoint = Vector3.zero;
-    private Vector3 _ModelVectorRotation = Vector3.zero;
+    public Vector3 _directionPoint = Vector3.zero;
+
+    //public Vector3 OriginToCharacter
+    //{
+    //    get
+    //    {
+    //        return _character.transform.position;
+    //    }
+    //}
+
+    //public Vector3 OriginToDirection
+    //{
+    //    get
+    //    {
+    //        return OriginToCharacter + _directionPoint;
+    //    }
+    //}
+
+    //public Vector3 CharacterToDirection
+    //{
+    //    get
+    //    {
+    //        return OriginToDirection - OriginToCharacter;
+    //    }
+    //}
+
+    //private Vector3 _ModelVectorRotation = Vector3.zero;
 
     private int _hashJump;
     private int _hashRun;
@@ -90,8 +115,8 @@ public class OGTCharacterMovement : NetworkBehaviour
         _character.Translate(_directionPoint * Time.fixedDeltaTime);
 
         //model döndürme
-        float angleModel = Vector3.Angle(Vector3.right, _ModelVectorRotation);
-        float angleDirection = Vector3.Angle(Vector3.right, _directionPoint);
+        //float angleModel = Vector3.Angle(Vector3.right, _ModelVectorRotation);
+        //float angleDirection = Vector3.Angle(Vector3.right, _directionPoint);
     }
 
     /// <param name="joystickAngle"joystick'in X ekseni ile yaptiigi aciyi 3D karakteriimizin , Yön Vektorune verdiren method</param>
@@ -129,15 +154,17 @@ public class OGTCharacterMovement : NetworkBehaviour
             Debug.DrawLine(Vector3.zero, charPos, Color.blue);
             //sari vektor = kooridnat orjininden baslayip , bu karede(frame'de) karakterimizin gitmeye baslayacagi noktayi gosteriyor
             Vector3 zeroToPoint = charPos + _directionPoint;
+
+
             Debug.DrawLine(Vector3.zero, zeroToPoint, Color.yellow);
             //kirmzi vektor = mavi_vektor - sari_vektor ; yani karakterin durdugu yerden ; gidecegi noktayi gosteren vektor
             Debug.DrawLine(charPos, zeroToPoint, Color.red);
-            //acinin hesaplandigi X eksenini temsil eden zigi
+            //acinin hesaplandigi X eksenini temsil eden cizgi
             //nokta1 of cizgi
             Vector3 point1 = new Vector3(charPos.x - 3, charPos.y, charPos.z);
             //nokta2 of cizgi
             Vector3 point2 = new Vector3(charPos.x + 3, charPos.y, charPos.z);
-            Debug.DrawLine(point1, point2 , Color.green);
+            Debug.DrawLine(point1, point2, Color.green);
         }
     }
 
@@ -150,7 +177,7 @@ public class OGTCharacterMovement : NetworkBehaviour
     {
         GameObject CopyCamera = GameObject.Instantiate(CameraPrefab, _character, false);
         _character.position = _spawnPoint;
-        _ModelVectorRotation = _character.rotation.eulerAngles;
+        //_ModelVectorRotation = _character.rotation.eulerAngles;
     }
 }
 
