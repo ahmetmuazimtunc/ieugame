@@ -28,7 +28,12 @@ public class OGTCharacterRotation : NetworkBehaviour
     {
         get
         {
-            return _character.rotation.eulerAngles.y;
+            float myangle = _character.rotation.eulerAngles.y + 270;
+            if (myangle > 360)
+            {
+                myangle = myangle - 360;
+            }
+            return myangle;
         }
     }
 
@@ -51,11 +56,12 @@ public class OGTCharacterRotation : NetworkBehaviour
         {
             //bu fonksiyonun buranin altindaki satirlarini okuma
             return;
-        }
-        //karakterin x ekseni ile yaptigi aci , gitmesi gereken patikanin-x Ekesni ile yaptigi acidan buyuk ise;   
+        }        
         float angle = _anglePerFrameFixed;
-        Debug.Log("Char_Angle: " + Angle_Char_yAxis);
+        Debug.Log(Angle_Char_yAxis + " - " + OGTCharacterMovement.Singleton.DirectionPointAngle);
         Debug.DrawLine(_character.transform.position, OGTCharacterMovement.Singleton._directionPoint);
+
+        //karakterin y ekseni ile yaptigi aci , gitmesi gereken patikanin-y Ekesni ile yaptigi acidan buyuk ise;   
         if (Angle_Char_yAxis > OGTCharacterMovement.Singleton.DirectionPointAngle + _angleOffset)
         {
             //aci kabull ettigimiz aralik degerinin icerisine girene kadar
