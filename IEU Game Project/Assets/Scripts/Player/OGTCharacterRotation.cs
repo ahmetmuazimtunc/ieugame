@@ -20,7 +20,7 @@ public class OGTCharacterRotation : NetworkBehaviour
     [SerializeField]    
     private Transform _character = null;
 
-    private float _angleOffset = 10f;
+    private float _angleAmountToStartRotating = 5f;
 
     private const float _anglePerFrameFixed = 2f;
 
@@ -28,10 +28,11 @@ public class OGTCharacterRotation : NetworkBehaviour
     {
         get
         {
-            float myangle = _character.rotation.eulerAngles.y + 270;
-            if (myangle > 360)
+            float myangle = 90 - _character.rotation.eulerAngles.y;            
+            if (myangle < 0)
             {
-                myangle = myangle - 360;
+                myangle = 360 + myangle;
+                //myangle = 360 - fark;
             }
             return myangle;
         }
@@ -51,27 +52,38 @@ public class OGTCharacterRotation : NetworkBehaviour
 
     public void CheckRotation()
     {
-        //eger bu script; Client'imizin karakterinden calismiyorsa, yani diger oyuncularin karakterlerinden birisi ise;
-        if (!isLocalPlayer || OGTCharacterMovement.Singleton.DirectionPointAngle == 0f)
+        //joystick ile karakterin bakis yonu arasinda acisal fark var mi?
+        float StickAngle = OGTCharacterMovement.Singleton.DirectionPointAngle;
+        float CharAngle = Angle_Char_yAxis;
+        float AngleDifference = StickAngle - CharAngle;
+        AngleDifference = OgtMathHelper.ConvertToPositive(AngleDifference);
+        //eger bu script; Client'imizin karakteri uzerinde calismiyorsa, yani diger oyuncularin karakterlerinden birisi ise;
+        //VEYA karakter ile joystick ayni aciya bakiyorsa
+        if (!isLocalPlayer || StickAngle == 0f || AngleDifference < _angleAmountToStartRotating )
         {
-            //bu fonksiyonun buranin altindaki satirlarini okuma
+            //bu fonksiyonun bu satirdan daha altindaki satirlarini okuma
             return;
         }        
         float angle = _anglePerFrameFixed;
-        Debug.Log(Angle_Char_yAxis + " - " + OGTCharacterMovement.Singleton.DirectionPointAngle);
-        Debug.DrawLine(_character.transform.position, OGTCharacterMovement.Singleton._directionPoint);
+        Debug.Log("CHAR:" + CharAngle + " - JOYSTICK:" + OGTCharacterMovement.Singleton.DirectionPointAngle);
+        //Debug.DrawLine(_character.transform.position, OGTCharacterMovement.Singleton._directionPoint);
 
-        //karakterin y ekseni ile yaptigi aci , gitmesi gereken patikanin-y Ekesni ile yaptigi acidan buyuk ise;   
-        if (Angle_Char_yAxis > OGTCharacterMovement.Singleton.DirectionPointAngle + _angleOffset)
+        //karkateri hangi taraftan dondurursek, daha cabuk ulasiriz yeni aciya?
+        float LeftAngle = 360 - CharAngle;
+        if (180 > CharAngle && CharAngle > 0)
         {
-            //aci kabull ettigimiz aralik degerinin icerisine girene kadar
-            //karakteri saga dondur
+            AngleDifference = 
+        }
+        else if (180 < CharAngle && CharAngle < 360)
+        {
+            AngleDifference = 
+        }
+
+        if (LeftAngle < AngleDifference)
+        {
             angle = -angle;
         }
-        else if (Angle_Char_yAxis < OGTCharacterMovement.Singleton.DirectionPointAngle -_angleOffset)
-        {
-            
-        }
+
         _character.Rotate(Vector3.up, angle);
     }
 
