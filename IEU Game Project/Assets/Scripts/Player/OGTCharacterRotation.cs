@@ -10,7 +10,6 @@ public class OGTCharacterRotation : NetworkBehaviour
 
     public OGTCharacterRotation Singleton
     {
-
         get
         {
             return _singleton;
@@ -29,12 +28,6 @@ public class OGTCharacterRotation : NetworkBehaviour
         get
         {
             return _character.eulerAngles.y;
-            //float myangle = 90 - _character.rotation.eulerAngles.y;            
-            //if (myangle < 0)
-            //{
-            //    myangle = 360 + myangle;
-            //}
-            //return myangle;
         }
     }
 
@@ -53,41 +46,43 @@ public class OGTCharacterRotation : NetworkBehaviour
     public void CheckRotation()
     {
         //joystick ile karakterin bakis yonu arasinda acisal fark var mi?
-        float StickAngleX = OGTCharacterMovement.Singleton.DirectionPointAngle;
-        float CharAngleX = Angle_Char_yAxis;
-        float AngleDifference = StickAngleX - CharAngleX;        
+        float StickAngleY = OGTCharacterMovement.Singleton.DirectionPointAngle;
+        float CharAngleY = Angle_Char_yAxis;
+        float AngleDifferenceSigned = StickAngleY - CharAngleY;        
         //eger bu script; Client'imizin karakteri uzerinde calismiyorsa, yani diger oyuncularin karakterlerinden birisi ise;
         //VEYA karakter ile joystick ayni aciya bakiyorsa
-        if (!isLocalPlayer || StickAngleX == 0f || AngleDifference < _angleAmountToStartRotating )
+        if (!isLocalPlayer || StickAngleY == 0f /*|| AngleDifference < _angleAmountToStartRotating */)
         {
             //bu fonksiyonun bu satirdan daha altindaki satirlarini okuma
             return;
         }        
+        //bir framede donecegi aci
         float angle = _anglePerFrameFixed;
-        Debug.Log("CHAR:" + CharAngleX + " - JOYSTICK:" + OGTCharacterMovement.Singleton.DirectionPointAngle);
+        //joystick ile karakter arasindaki acinin pozitifi
+        float AngleDifference = OgtMathHelper.ConvertToPositive(AngleDifferenceSigned);
+        //aralarindaki aciyi 360'a tamamlayan aci
+        float RemainingAngle = 360 - AngleDifference;
+        //hangi aci daha kisa donmek icin?
+        if (AngleDifference <= RemainingAngle)
+        {
 
-        if (0 < StickAngleX && StickAngleX < 180)
-        {           
-            //eger aralarindaki aci eksi ciktiysa, karakter joystickin solunda demektir
-            if (AngleDifference < 0)
-            {
-                //karakterin saga donmesi icin, bakis yonu acisini azaltmamiz gerekiyor
-                angle = -angle;
-            } 
         }
         else
         {
-            
-        }      
 
-        //dairenin kalan acisi (360 - x)
-        float CirculerComplementaryAngle = 360 - AngleDifference;
+        }
+
+        //eger aralarindaki aci eksi ciktiysa, karakter joystickin solunda demektir
+        if (AngleDifferenceSigned < 0)
+        {
+            //karakterin saga donmesi icin, bakis yonu acisini azaltmamiz gerekiyor
+            angle = -angle;
+        }
         _character.Rotate(Vector3.up, angle);
-        Debug.Log("CHAR DONDUKTEN SONRA ACI: " + _character.transform.rotation.eulerAngles.y);
     }
 
     private void FixedUpdate()
     {
-        //CheckRotation();
+        CheckRotation();
     }
 }

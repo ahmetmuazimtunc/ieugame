@@ -139,7 +139,7 @@ public class OGTCharacterMovement : NetworkBehaviour
 
             _directionPoint = directionPointFromOrigin - charPos;
 
-            Quaternion rotation = Quaternion.AngleAxis(90 - DirectionPointAngle, Vector3.up);
+            Quaternion rotation = Quaternion.AngleAxis(DirectionPointAngle, Vector3.up);
             _directionPoint = rotation * _directionPoint;
 
         }

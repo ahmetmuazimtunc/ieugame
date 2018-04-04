@@ -668,7 +668,6 @@ GameObject:
   - component: {fileID: 95548519475218656}
   - component: {fileID: 54634742175900396}
   - component: {fileID: 136442084404065704}
-  - component: {fileID: 114075791876687340}
   - component: {fileID: 114657239424530376}
   - component: {fileID: 114289397164333592}
   - component: {fileID: 114722780218108580}
@@ -2507,25 +2506,6 @@ MonoBehaviour:
     type: 2}
   _anglePrecision: 2
   _character: {fileID: 4181293410497756}
---- !u!114 &114075791876687340
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1468443606905432}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce7a80d520cacc042b5fe14f373d8173, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_MovingTurnSpeed: 360
-  m_StationaryTurnSpeed: 180
-  m_JumpPower: 6
-  m_GravityMultiplier: 2
-  m_RunCycleLegOffset: 0.2
-  m_MoveSpeedMultiplier: 1
-  m_AnimSpeedMultiplier: 1
-  m_GroundCheckDistance: 0.3
 --- !u!114 &114261369152520268
 MonoBehaviour:
   m_ObjectHideFlags: 1

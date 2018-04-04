@@ -21,16 +21,19 @@ namespace UnityStandardAssets.CrossPlatformInput
 
         void Update()
         {
+            DrawDebugLines();
+        }
+
+        private void DrawDebugLines()
+        {
             DrawCoordinateSystem();
             DrawJoystickMaximumBorders();
 
-            Debug.DrawLine(new Vector3(0, 50, 0), new Vector3(200, 50, 0));
-            
-
-            Debug.DrawLine(Vector3.zero, transform.position);
-            Debug.DrawLine(Vector3.zero, _origin.position);
-            Vector3 originToNew = transform.position - _origin.position;
-            Debug.DrawLine(Vector3.zero, originToNew);
+            //Debug.DrawLine(Vector3.zero, transform.position);
+            //Debug.DrawLine(Vector3.zero, _origin.position);
+            //Vector3 originToNew = transform.position - _origin.position;
+            //Debug.DrawLine(Vector3.zero, originToNew);
+            Debug.DrawLine(_origin.position, transform.position);
         }
 
         //joystickimizin sinirlarini gosteren kareyi View'a cizdiren method
@@ -134,21 +137,15 @@ namespace UnityStandardAssets.CrossPlatformInput
             float angle = 0;
             float angleX = Vector3.Angle(_xCoordinate, originToNew);
             float angleY = Vector3.Angle(_yCoordinate, originToNew);
-            //Debug.Log("X: " + angleX + " Y: " + angleY);
-            //if (transform.position.y < _origin.transform.position.y)
-            //{
-            //    angleX = 360 - angleX;
-            //}
-            //return angleX;
 
             //joystick Y-Ekseninin saginda ise direkt Y-Ekseni ile yaptigi aciyi dondur
             angle = angleY;
             //joystikc eger Y-Ekseninin sol tarafinda ise (yani X ekseni ile yaptigi aci 90-180 arasindaysa)
-            if (90 < angleX && angleX < 180)
+            if(90 < angleX && angleX < 180)
             {
                 angle = 360 - angleY;
             }
-            Debug.Log(angle);
+            //Debug.Log("JOYSTICK-YAXIS: " + angle + " ANGLE");
             return angle;
         }
 
