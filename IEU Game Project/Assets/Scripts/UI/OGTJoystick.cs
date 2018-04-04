@@ -22,7 +22,7 @@ namespace UnityStandardAssets.CrossPlatformInput
         void Update()
         {
             DrawCoordinateSystem();
-            DrawJoystickRadiusAndVectors();
+            DrawJoystickMaximumBorders();
 
             Debug.DrawLine(new Vector3(0, 50, 0), new Vector3(200, 50, 0));
             
@@ -34,7 +34,7 @@ namespace UnityStandardAssets.CrossPlatformInput
         }
 
         //joystickimizin sinirlarini gosteren kareyi View'a cizdiren method
-        private void DrawJoystickRadiusAndVectors()
+        private void DrawJoystickMaximumBorders()
         {
             for (int i = 0; i < 4; i++)
             {
@@ -118,9 +118,11 @@ namespace UnityStandardAssets.CrossPlatformInput
 
             transform.position = newPos;
 
-            float angle = CalculateJoystickAngle(newPos);                        
-            OGTCharacterMovement.Singleton.SetDirectionFromJoystickAngle(angle);
-            //Debug.Log(OGTCharacterMovement.Singleton.DirectionPointAngle);
+            //JOYSTİCK IN YENİ POZISYNUNDAN ACI HESABİ YAPIYOR        
+            float angle = CalculateJoystickAngle(newPos);
+            //Debug.Log("JOYSTICK ANGLE: " + angle);
+            //VE KARAKTERIN ACISINI SET EDIYORUZ
+            OGTCharacterMovement.Singleton.DirectionPointAngle = angle;
         }
 
         /// <summary>
@@ -129,11 +131,24 @@ namespace UnityStandardAssets.CrossPlatformInput
         private float CalculateJoystickAngle(Vector3 joyStickVector)
         {
             Vector3 originToNew = transform.position - _origin.position;
-            float angle = Vector3.Angle(_xCoordinate, originToNew);
-            if (transform.position.y < _origin.transform.position.y)
+            float angle = 0;
+            float angleX = Vector3.Angle(_xCoordinate, originToNew);
+            float angleY = Vector3.Angle(_yCoordinate, originToNew);
+            //Debug.Log("X: " + angleX + " Y: " + angleY);
+            //if (transform.position.y < _origin.transform.position.y)
+            //{
+            //    angleX = 360 - angleX;
+            //}
+            //return angleX;
+
+            //joystick Y-Ekseninin saginda ise direkt Y-Ekseni ile yaptigi aciyi dondur
+            angle = angleY;
+            //joystikc eger Y-Ekseninin sol tarafinda ise (yani X ekseni ile yaptigi aci 90-180 arasindaysa)
+            if (90 < angleX && angleX < 180)
             {
-                angle = 360 - angle;
+                angle = 360 - angleY;
             }
+            Debug.Log(angle);
             return angle;
         }
 
@@ -141,7 +156,7 @@ namespace UnityStandardAssets.CrossPlatformInput
         {
             _isDown = false;
             transform.position = _origin.position;
-            OGTCharacterMovement.Singleton.SetDirectionFromJoystickAngle(0);
+            OGTCharacterMovement.Singleton.DirectionPointAngle = 0f;
             //Debug.Log(OGTCharacterMovement.Singleton.DirectionPointAngle);
         }
 

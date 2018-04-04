@@ -30,7 +30,10 @@ public class OGTCharacterMovement : NetworkBehaviour
         get
         {
             return _directionPointAngle;
+
+
         }
+        set{ _directionPointAngle = value; }
     }
 
     private static OGTCharacterMovement _singleton;
@@ -44,7 +47,7 @@ public class OGTCharacterMovement : NetworkBehaviour
     private Transform _character = null;
 
     //Karaktermizin hareket edip etmeyecegini, edecekse hangi yone edecegini buradan anliyoruz. Hareket istenmiyorsa 0'lar atanmali
-    public Vector3 _directionPoint = Vector3.zero;
+    private Vector3 _directionPoint = Vector3.zero;
 
     //public Vector3 OriginToCharacter
     //{
@@ -91,6 +94,9 @@ public class OGTCharacterMovement : NetworkBehaviour
         _hashRun = Animator.StringToHash("run");
     }
 
+    /// <summary>
+    /// karakteri gidecegi noktaya ilerletiyor
+    /// </summary>
     private void Movecharacter()
     {
         if (!isLocalPlayer)
@@ -119,31 +125,36 @@ public class OGTCharacterMovement : NetworkBehaviour
         //float angleDirection = Vector3.Angle(Vector3.right, _directionPoint);
     }
 
-    /// <param name="joystickAngle"joystick'in X ekseni ile yaptiigi aciyi 3D karakteriimizin , Yön Vektorune verdiren method</param>
-    public void SetDirectionFromJoystickAngle(float joyStickAngle)
+    /// <summary>
+    /// karakterin gidecegi noktayi, global aci ile set ediyor
+    /// Global aci, baska scriptler tarafindan SET edilmeli
+    /// </summary>
+    private void SetDirectionPointFromAngle()
     {
         //bizim elimizde olan bir eşik degerin uzerine cikarsa karakterimizi kosturalim
-        if (joyStickAngle > _anglePrecision)
+        if (DirectionPointAngle > _anglePrecision)
         {
             Vector3 charPos = _character.position;
             Vector3 directionPointFromOrigin = new Vector3(charPos.x, charPos.y, charPos.z + 1);
 
             _directionPoint = directionPointFromOrigin - charPos;
+
+            Quaternion rotation = Quaternion.AngleAxis(90 - DirectionPointAngle, Vector3.up);
+            _directionPoint = rotation * _directionPoint;
+
         }
         else
         {
             _directionPoint.Set(0, 0, 0);
-            _directionPointAngle = joyStickAngle;
             return;
-        }
-        Quaternion rotation = Quaternion.AngleAxis(90 - joyStickAngle, Vector3.up);
-        _directionPoint = rotation * _directionPoint;
-        //diger scriptlerimiz buradan okuyacak , o sebeple acimizi global bir degiskende tutuyoruz.
-        _directionPointAngle = joyStickAngle;
+        }        
     }
 
     private void FixedUpdate()
     {
+        //karakterin gidecegi noktayi, global aci ile set ediyor
+        SetDirectionPointFromAngle();
+        //karakteri gidecegi noktaya ilerletiyor
         Movecharacter();
         //Vektor Debug
         if (OGTJoystick._isDown)
